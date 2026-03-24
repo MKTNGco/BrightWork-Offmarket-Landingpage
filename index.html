@@ -682,9 +682,8 @@
 
 <script>
   // ─── CONFIG ───────────────────────────────────────────────
-  // Paste your Zapier Catch Hook URL (Zap can forward to Follow Up Boss, CRM, etc.).
-  // Never put API keys in frontend code — they are visible to anyone.
-  const ZAPIER_WEBHOOK_URL = '';
+  // JSON POST goes to Cloudflare Worker → Follow Up Boss (no API keys in the browser).
+  const FUB_PROXY_URL = 'https://bw-fub-proxy.scott-5f5.workers.dev';
   const LEAD_TAG = 'off-market-lead';
   const SOURCE = 'Off-Market Landing Page';
   // ─────────────────────────────────────────────────────────
@@ -696,7 +695,7 @@
     const btnText = document.getElementById('btnText');
     const spinner = document.getElementById('spinner');
 
-    if (!ZAPIER_WEBHOOK_URL || !/^https:\/\//i.test(ZAPIER_WEBHOOK_URL)) {
+    if (!FUB_PROXY_URL || !/^https:\/\//i.test(FUB_PROXY_URL)) {
       alert('Form delivery is not configured yet. Please call us at (925) 200-6000.');
       return;
     }
@@ -705,23 +704,22 @@
     btnText.textContent = 'Submitting...';
     spinner.style.display = 'block';
 
-    const firstName  = document.getElementById('firstName').value.trim();
-    const lastName   = document.getElementById('lastName').value.trim();
-    const email      = document.getElementById('email').value.trim();
-    const phone      = document.getElementById('phone').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const emailRaw  = document.getElementById('email').value.trim();
+    const phoneRaw  = document.getElementById('phone').value.trim();
 
+    // Follow Up Boss–style payload (matches People API shape the Worker forwards)
     const payload = {
-      source: SOURCE,
-      tag: LEAD_TAG,
       firstName,
       lastName,
-      email,
-      phone,
-      submittedAt: new Date().toISOString()
+      emails: [{ value: emailRaw, type: 'work' }],
+      phones: [{ value: phoneRaw, type: 'mobile' }],
+      tags: [LEAD_TAG, SOURCE]
     };
 
     try {
-      const res = await fetch(ZAPIER_WEBHOOK_URL, {
+      const res = await fetch(FUB_PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -731,7 +729,7 @@
         document.getElementById('leadForm').style.display = 'none';
         document.getElementById('successState').style.display = 'block';
       } else {
-        throw new Error('Webhook error');
+        throw new Error('Proxy error');
       }
     } catch (err) {
       alert('Something went wrong. Please call us at (925) 200-6000.');
