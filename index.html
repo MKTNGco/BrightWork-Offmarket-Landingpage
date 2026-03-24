@@ -31,6 +31,8 @@
       --text: #1e2d3d;
       --muted: #5a7184;
       --border: #d8edf4;
+      /* Aligns nav logo with hero copy and other main-column content */
+      --page-gutter: 60px;
     }
     body {
       font-family: 'Montserrat', sans-serif;
@@ -50,7 +52,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
+      padding: 0 var(--page-gutter);
       height: 72px;
     }
     .nav-logo {
@@ -59,7 +61,7 @@
       text-decoration: none;
     }
     .nav-logo img {
-      height: 44px;
+      height: 55px;
       width: auto;
       display: block;
     }
@@ -72,7 +74,7 @@
     }
     .nav-logo-text.is-visible { display: inline; }
     .nav-logo-blue img {
-      height: 44px;
+      height: 55px;
       width: auto;
     }
     .nav-phone {
@@ -95,8 +97,8 @@
     .hero {
       margin-top: 72px;
       position: relative;
-      height: 56vh;
-      min-height: 420px;
+      /* Taller than before so badge + headline + subhead + CTA fit without clipping */
+      min-height: max(62vh, 560px);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -113,12 +115,19 @@
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to right, rgba(10,30,50,0.41) 40%, rgba(10,30,50,0.15) 100%);
+      /* Darker on the left where copy sits; keeps photo visible on the right */
+      background: linear-gradient(
+        to right,
+        rgba(6, 18, 36, 0.82) 0%,
+        rgba(10, 26, 44, 0.62) 48%,
+        rgba(12, 28, 48, 0.28) 85%,
+        rgba(14, 32, 52, 0.12) 100%
+      );
     }
     .hero-content {
       position: relative;
       z-index: 2;
-      padding: 48px 60px;
+      padding: 48px var(--page-gutter);
       max-width: 620px;
     }
     .hero-badge {
@@ -151,12 +160,13 @@
     }
     .hero h1 span { color: var(--cyan); }
     .hero p {
-      font-size: 16px;
-      font-weight: 300;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.75;
-      margin-bottom: 36px;
-      max-width: 480px;
+      font-size: clamp(17px, 1.4vw, 20px);
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.96);
+      line-height: 1.65;
+      margin-bottom: 28px;
+      max-width: 520px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
     }
     .hero-cta {
       display: inline-flex;
@@ -503,11 +513,12 @@
     .hero-cta     { animation: fadeUp 0.5s ease 0.3s both; }
     /* ── RESPONSIVE ── */
     @media (max-width: 800px) {
-      nav { padding: 0 20px; }
+      :root { --page-gutter: 28px; }
       .split { grid-template-columns: 1fr; }
       .split-left { padding: 56px 28px; }
       .split-right { padding: 56px 28px; }
-      .hero-content { padding: 40px 28px; }
+      .hero { min-height: max(56vh, 500px); }
+      .hero-content { padding: 36px var(--page-gutter) 40px; }
       .trust-bar { gap: 24px; padding: 20px 28px; }
       .mls-bar { padding: 24px 28px; }
       footer { padding: 28px 28px; flex-direction: column; text-align: center; }
