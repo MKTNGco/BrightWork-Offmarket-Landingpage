@@ -711,13 +711,15 @@
     const emailRaw  = document.getElementById('email').value.trim();
     const phoneRaw  = document.getElementById('phone').value.trim();
 
-    // Follow Up Boss–style payload (matches People API shape the Worker forwards)
+    // Worker expects FUB-style body with a top-level `person` object (flat root returns 400).
     const payload = {
-      firstName,
-      lastName,
-      emails: [{ value: emailRaw, type: 'work' }],
-      phones: [{ value: phoneRaw, type: 'mobile' }],
-      tags: [LEAD_TAG, SOURCE]
+      person: {
+        firstName,
+        lastName,
+        emails: [{ value: emailRaw, type: 'work' }],
+        phones: [{ value: phoneRaw, type: 'mobile' }],
+        tags: [LEAD_TAG, SOURCE]
+      }
     };
 
     try {
